@@ -1,4 +1,4 @@
-# Slot Booking
+# BookMySlot
 Software engineering group project
 
 Team members:
