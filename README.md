@@ -10,4 +10,5 @@ Team members:
 
 # To Run the code
 ./server.py --port xxxx       xxxx is some port number 
+
 ./client.py --host remoteXX.cs.binghamton.edu --port xxxx
