@@ -1,35 +1,32 @@
 #!/usr/bin/env python3
 
-import os
-import socket
-import ssl
-import sys
-a=sys.argv
-a1=a[1]
-a2=int(a[2])
-HOST = a1
-PORT = a2
-def sftp_client():
-    context = ssl.create_default_context()
-    context.check_hostname = False
-    context.verify_mode = ssl.CERT_NONE
+from socket import socket, AF_INET, SOCK_STREAM
+from ssl import create_default_context, CERT_NONE
+from argparse import ArgumentParser
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock = context.wrap_socket(sock, server_hostname=HOST)
-    sock.connect((HOST, PORT))
-    print('Connected to the sftp server')
-    authenticated = False
-    while not authenticated:
+def book_my_slot_client(HOST, PORT):
+    context = create_default_context()
+    context.check_hostname = False
+    context.verify_mode = CERT_NONE
+
+    sock_connection = socket(AF_INET, SOCK_STREAM)
+    sock_connection = context.wrap_socket(sock_connection, server_hostname=HOST)
+    sock_connection.connect((HOST, PORT))
+    
+    print('Connected to the BookMySlot server')
+    logged_in = False
+    while not logged_in:
         username = input('Username: ')
         password = input('Password: ')
-        sock.sendall(username.encode())
-        sock.sendall(password.encode())
-        response = sock.recv(1024).decode().strip()
-        if response == 'correct ID and password':
-            authenticated = True
+        sock_connection.sendall(username.encode())
+        sock_connection.sendall(password.encode())
+        
+        authentication_response = sock_connection.recv(1024).decode().strip()
+        if authentication_response == 'correct ID and password':
+            logged_in = True
         else:
             print('Invalid Login Details, please try again')
-    print('Logged in to the appoint scheduler')
+    print('Successfully logged in to the appointment scheduler.')
 
     while True:
         print('Main Menu')
@@ -38,37 +35,51 @@ def sftp_client():
         print('3. view your slot details')
         print('4. Exit')
         print('\n')
-        command = input('choose from above option: ')
-        sock.sendall(command.encode())
-        if command=='1':
-            status=sock.recv(1024).decode()
-            if status=='0':
-                print('\nYour slot is already booked.\nPlease use modify option to modify your slot\n')
+        
+        user_choice = input('choose from above option: ')
+        sock_connection.sendall(user_choice.encode())
+        if user_choice=='1':
+            slot_status = sock_connection.recv(1024).decode()
+            if slot_status == '0':
+                print('\nYour slot is already booked.\nPlease use modify option to re-schedule your slot\n')
             else:
                 print('\nbook your slot')
-                bs=sock.recv(1024).decode()
-                print(bs)
-                sd=input('select an option from above slots : ')
-                sock.sendall(sd.encode())
-                prasad=int(sd)
-                if(prasad<10):
-                    print('slot booked successfully\n')
-        elif command=='2':
-            result31=sock.recv(1024).decode()
+                available_slots = sock_connection.recv(1024).decode()
+                print(available_slots)
+                selected_slot = input('select an option from above slots : ')
+                sock_connection.sendall(selected_slot.encode())
+                selected_slot_index = int(selected_slot)
+                if(selected_slot_index < 10):
+                    print('Slot booked successfully\n')
+
+        elif user_choice=='2':
+            drop_result = sock_connection.recv(1024).decode()
             print('\n')
-            print(result31)
+            print(drop_result)
             print('\n')
-        elif command=='3':
-            result3=sock.recv(1024).decode()
+        elif user_choice=='3':
+            slot_details_result = sock_connection.recv(1024).decode()
             print('\n')
-            print(result3)
+            print(slot_details_result)
             print('\n')
-        elif command=='4':
-            sock.close()
+        
+        elif user_choice =='4':
+            sock_connection.close()
             break
         else:
             print('Invalid command')
             print('\n')
 
 
-sftp_client()
+def main():
+    parser = ArgumentParser(description="Initialize a socket connection with a Admin-specified HOST and PORT.")
+    
+    parser.add_argument("--host", type=str, help="Specify the HOST address.")
+    parser.add_argument("--port", type=int, help="Specify the port number.")
+
+    args = parser.parse_args()
+    # print(f"Using port: {args.host, args.port}")
+    book_my_slot_client(args.host, args.port)
+
+if __name__ == "__main__":
+    main()
