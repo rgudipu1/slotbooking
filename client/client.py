@@ -49,7 +49,7 @@ def book_my_slot_client(HOST, PORT):
         if user_choice=='bookslot':
             slot_status = sock_connection.recv(1024).decode()
             if slot_status == '0':
-                print('\nYour slot is already booked.\nPlease use modify option to re-schedule your slot\n')
+                print('\nYour slot is already booked.\nPlease use drop option to drop your existing slot\n')
             else:
                 print('\nbook your slot')
                 available_slots = sock_connection.recv(1024).decode()
