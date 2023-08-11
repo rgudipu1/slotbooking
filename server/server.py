@@ -67,7 +67,7 @@ def book_my_slot_server(port):
 
         while True:
             received_data = conn.recv(1024).decode()
-            if received_data == '1':
+            if received_data == 'bookslot':
                 user_found = False
                 for history_entry in booking_history:
                     if history_entry["username"] == username:
@@ -102,7 +102,7 @@ def book_my_slot_server(port):
                                 break
                             slot_counter += 1
 
-            elif received_data == '3':
+            elif received_data == 'viewslot':
                 slot_booked = False
                 for history_entry in booking_history:
                     if history_entry["username"] == username and "slot_date" in history_entry:
@@ -114,7 +114,7 @@ def book_my_slot_server(port):
                 if not slot_booked:
                     conn.sendall(b'You have not booked a slot')
 
-            elif received_data == '2':
+            elif received_data == 'dropslot':
                 slot_found = False
                 slot_date_to_drop = ''
                 for history_entry in booking_history:
@@ -130,15 +130,15 @@ def book_my_slot_server(port):
                     for slot_entry in slot_details:
                         if slot_entry["slot_date"] == slot_date_to_drop:
                             slot_entry["slot_status"] = 0
-                            slot_entry["booked_by"] = ""
-                            slot_entry["booked_at"] = ""
+                            slot_entry.pop("booked_by", None) 
+                            slot_entry.pop("booked_at", None)
                             save_slot_details_to_json("../slotdetails.json", slot_details)
                             booking_history = [entry for entry in booking_history if entry["username"] != username]
                             save_history_to_json("../history.json", booking_history)
                             break
 
 
-            elif received_data == '4':
+            elif received_data == 'exit':
                 break
             else:
                 z = 1
@@ -150,6 +150,7 @@ def main():
     parser = ArgumentParser(description="Initialize a socket connection with a Admin-specified port.")
     parser.add_argument("--port", type=int, help="Specify the PORT number.")
     args = parser.parse_args()
+    print(f"Host address: {gethostbyname(gethostname()) }")
     print(f"Using port: {args.port}")
     book_my_slot_server(args.port)
 
