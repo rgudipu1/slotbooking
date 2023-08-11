@@ -13,6 +13,8 @@ Team members:
 
 ./client.py --host xxx --port xxxx
 
+python3 test_client.py  [for test case]
+
 # Test cases
 https://docs.google.com/spreadsheets/d/1ppAtkJ79XrQXUU3S84ez5OmkKicJ5CQUESGOi4-zHHc/edit?usp=sharing
 
