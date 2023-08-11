@@ -37,8 +37,16 @@ def book_my_slot_client(HOST, PORT):
         print('\n')
         
         user_choice = input('choose from above option: ')
-        sock_connection.sendall(user_choice.encode())
         if user_choice=='1':
+            user_choice='bookslot'
+        elif user_choice=='2':
+            user_choice='dropslot'
+        elif user_choice=='3':
+            user_choice='viewslot'
+        else:
+            user_choice='exit'
+        sock_connection.sendall(user_choice.encode())
+        if user_choice=='bookslot':
             slot_status = sock_connection.recv(1024).decode()
             if slot_status == '0':
                 print('\nYour slot is already booked.\nPlease use modify option to re-schedule your slot\n')
@@ -52,18 +60,18 @@ def book_my_slot_client(HOST, PORT):
                 if(selected_slot_index < 10):
                     print('Slot booked successfully\n')
 
-        elif user_choice=='2':
+        elif user_choice=='dropslot':
             drop_result = sock_connection.recv(1024).decode()
             print('\n')
             print(drop_result)
             print('\n')
-        elif user_choice=='3':
+        elif user_choice=='viewslot':
             slot_details_result = sock_connection.recv(1024).decode()
             print('\n')
             print(slot_details_result)
             print('\n')
         
-        elif user_choice =='4':
+        elif user_choice =='exit':
             sock_connection.close()
             break
         else:
