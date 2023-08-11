@@ -14,7 +14,7 @@ class TestBookMySlotClient(unittest.TestCase):
         
         f_output = StringIO()
         with patch('sys.stdout', f_output):
-            book_my_slot_client('192.168.1.25', 5678)  
+            book_my_slot_client(host, port)  
         
         #ep1 is to check server connection
         #ep2 is to check login details are correct or not
@@ -41,7 +41,7 @@ class TestBookMySlotClient(unittest.TestCase):
         
         f_output = StringIO()
         with patch('sys.stdout', f_output):
-            book_my_slot_client('192.168.1.25', 5678)  
+            book_my_slot_client(host, port)  
         expected_output1 =('Connected to the BookMySlot server\n')
         expected_output2 =('Successfully logged in to the appointment scheduler.\n')
         expected_output3=('Main Menu\n1. Book a slot for demo\n2. Drop existing slot\n3. view your slot details\n4. Exit\n\n\n\n')
@@ -52,4 +52,6 @@ class TestBookMySlotClient(unittest.TestCase):
         self.assertEqual(m,total_output)
         
 if __name__ == '__main__':
+    host = input("Enter the host: ")
+    port = int(input("Enter the port: "))
     unittest.main()
